@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Puzzel Galaxy Cyber</title>
+  <style>
+    body {
+      background: url("https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80") no-repeat center center fixed;
+      background-size: cover;
+      color: #00fff7;
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    #title {
+      font-size: 28px;
+      margin-top: 15px;
+      color: #00fff7;
+      text-shadow: 0 0 15px #ff00ff, 0 0 30px #00fff7, 0 0 45px #ff00ff;
+    }
+    h1, h2 {
+      margin: 8px;
+      text-shadow: 0 0 15px #ff00ff, 0 0 30px #00fff7;
+      font-size: 18px;
+    }
+    #game {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 2px;
+      margin: 15px auto;
+      max-width: 90vmin;
+      max-height: 90vmin;
+      aspect-ratio: 1 / 1;
+      background: rgba(10, 10, 30, 0.4);
+      padding: 5px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #00fff7, inset 0 0 10px #ff00ff;
+    }
+    .cell {
+      background: rgba(255,255,255,0.05);
+      border-radius: 5px;
+    }
+    #pieces {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .piece {
+      display: inline-block;
+      padding: 4px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      background: rgba(10, 10, 30, 0.6);
+      box-shadow: 0 0 8px #00fff7;
+      cursor: pointer;
+    }
+    .block {
+      width: 20px;
+      height: 20px;
+      margin: 1px;
+      display: inline-block;
+      border-radius: 4px;
+      box-shadow: 0 0 6px rgba(0,255,255,0.7);
+    }
+    @media (min-width: 768px) {
+      #title { font-size: 36px; }
+      h1, h2 { font-size: 22px; }
+      .block { width: 30px; height: 30px; }
+    }
+    #overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 1000;
+    }
+    #overlay h1 {
+      font-size: 42px;
+      color: #ff007f;
+      text-shadow: 0 0 20px #ff007f, 0 0 40px #ff00ff;
+      margin-bottom: 20px;
+    }
+    #restartBtn {
+      padding: 12px 25px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(90deg, #ff007f, #00fff7);
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 0 15px #00fff7, 0 0 30px #ff007f;
+      transition: 0.2s;
+    }
+    #restartBtn:hover { transform: scale(1.1); }
+    footer {
+      margin-top: 20px;
+      color: #fff;
+      font-size: 12px;
+      text-shadow: 0 0 5px #00fff7;
+    }
+    .preview-valid { background: rgba(0,255,255,0.3) !important; }
+    .preview-invalid { background: rgba(255,0,0,0.4) !important; }
+
+    /* --------- Tutorial Overlay --------- */
+    #tutorialBtn {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 8px 12px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      background: linear-gradient(90deg,#ff007f,#00fff7);
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00fff7,0 0 20px #ff007f;
+      z-index: 2000;
+    }
+    #tutorialOverlay {
+      position: fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 1500;
+      color:#00fff7;
+      text-align:center;
+      padding:20px;
+    }
+    #tutorialOverlay h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+    #tutorialOverlay p {
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    #closeTutorial {
+      padding: 10px 20px;
+      font-size:16px;
+      border:none;
+      border-radius:8px;
+      background: linear-gradient(90deg,#ff007f,#00fff7);
+      color:white;
+      cursor:pointer;
+      margin-top:20px;
+    }
+  </style>
+</head>
+<body>
+  <button id="tutorialBtn">📖 Tutorial</button>
+
+  <h1 id="title">🌌 Puzzel Galaxy Cyber 🌌</h1>
+  <h1>💜 Score: <span id="score">0</span></h1>
+  <h2>🏆 High Score: <span id="highscore">0</span></h2>
+  <div id="game"></div>
+  <div id="pieces"></div>
+
+  <div id="overlay">
+    <h1>💀 GAME OVER 💀</h1>
+    <button id="restartBtn">🔄 Mulai Ulang</button>
+  </div>
+
+  <div id="tutorialOverlay">
+    <h1>📖 Tutorial</h1>
+    <p>
+      1. Klik salah satu piece di bawah grid untuk memilihnya.<br>
+      2. Klik sel pada grid untuk meletakkan piece.<br>
+      3. Garis penuh akan hilang dan menambah skor.<br>
+      4. Game over terjadi jika tidak ada piece yang bisa diletakkan.
+    </p>
+    <button id="closeTutorial">Tutup</button>
+  </div>
+
+  <footer>© 2025 Resturpl2 | Puzzel Galaxy Cyber.</footer>
+
+  <script>
+    const game = document.getElementById("game");
+    const scoreEl = document.getElementById("score");
+    const highScoreEl = document.getElementById("highscore");
+    const piecesEl = document.getElementById("pieces");
+    const overlay = document.getElementById("overlay");
+    const restartBtn = document.getElementById("restartBtn");
+
+    // Tutorial
+    const tutorialBtn = document.getElementById("tutorialBtn");
+    const tutorialOverlay = document.getElementById("tutorialOverlay");
+    const closeTutorial = document.getElementById("closeTutorial");
+
+    tutorialBtn.addEventListener("click", () => {
+      tutorialOverlay.style.display = "flex";
+    });
+    closeTutorial.addEventListener("click", () => {
+      tutorialOverlay.style.display = "none";
+    });
+
+    let score = 0;
+    let highScore = localStorage.getItem("block_highscore") || 0;
+    highScoreEl.textContent = highScore;
+
+    const colors = ["#ff007f","#00fff7","#ffea00","#00ff73","#ff6a00","#8b00ff"];
+    const size = 10;
+    let grid = [];
+    let availablePieces = [];
+    let selectedPiece = null;
+
+    const sounds = {
+      place: new Audio("https://freesound.org/data/previews/256/256113_3263906-lq.mp3"),
+      clear: new Audio("https://freesound.org/data/previews/331/331912_3248244-lq.mp3"),
+      gameover: new Audio("https://freesound.org/data/previews/331/331912_3248244-lq.mp3")
+    };
+
+    function initGame(){
+      game.innerHTML="";
+      piecesEl.innerHTML="";
+      grid=[];
+      availablePieces=[];
+      selectedPiece=null;
+      score=0;
+      scoreEl.textContent=score;
+      overlay.style.display="none";
+
+      for (let r=0; r<size; r++) {
+        grid[r] = [];
+        for (let c=0; c<size; c++) {
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          game.appendChild(cell);
+          grid[r][c] = {filled:false, el:cell};
+          cell.addEventListener("click",()=>placeAt(c,r));
+          cell.addEventListener("mouseenter",()=>showPreview(c,r));
+          cell.addEventListener("mouseleave",clearPreview);
+        }
+      }
+      newPieces();
+    }
+
+    const shapes = [
+      [[1,1,1,1]],
+      [[1],[1],[1],[1]],
+      [[1,1],[1,1]],
+      [[1,1,1],[0,1,0]],
+      [[1,1,0],[0,1,1]],
+      [[0,1,1],[1,1,0]],
+      [[1,0],[1,0],[1,1]]
+    ];
+
+    function newPieces(){
+      if (piecesEl.childElementCount > 0) return;
+      availablePieces = [];
+      for(let i=0;i<3;i++){
+        const shape = shapes[Math.floor(Math.random()*shapes.length)];
+        const piece = document.createElement("div");
+        piece.className="piece";
+        const color = colors[Math.floor(Math.random()*colors.length)];
+        piece.dataset.shape = JSON.stringify(shape);
+        piece.dataset.color = color;
+        piece.dataset.id = i;
+        shape.forEach(row=>{
+          const rowEl = document.createElement("div");
+          row.forEach(v=>{
+            const b = document.createElement("div");
+            b.className="block";
+            if(v) b.style.background=color;
+            rowEl.appendChild(b);
+          });
+          piece.appendChild(rowEl);
+        });
+        piece.addEventListener("click",()=>{
+          selectedPiece = {shape: JSON.parse(piece.dataset.shape), color: piece.dataset.color, id: i, el: piece};
+          document.querySelectorAll(".piece").forEach(p=>p.style.outline="");
+          piece.style.outline = "2px solid #fff";
+        });
+        piecesEl.appendChild(piece);
+        availablePieces.push(piece);
+      }
+      checkGameOver();
+    }
+
+    function placeAt(x,y){
+      if(!selectedPiece) return;
+      if(placeShape(selectedPiece.shape,x,y,selectedPiece.color)){
+        sounds.place.play();
+        selectedPiece.el.remove();
+        availablePieces[selectedPiece.id] = null;
+        selectedPiece = null;
+        clearPreview();
+        if(availablePieces.every(p => p === null)){
+          piecesEl.innerHTML = "";
+          newPieces();
+        }
+      }
+    }
+
+    function placeShape(shape,x,y,color){
+      for(let r=0;r<shape.length;r++){
+        for(let c=0;c<shape[0].length;c++){
+          if(shape[r][c]){
+            if(y+r>=size||x+c>=size) return false;
+            if(grid[y+r][x+c].filled) return false;
+          }
+        }
+      }
+      for(let r=0;r<shape.length;r++){
+        for(let c=0;c<shape[0].length;c++){
+          if(shape[r][c]){
+            grid[y+r][x+c].filled=true;
+            grid[y+r][x+c].el.style.background=color;
+            grid[y+r][x+c].el.style.boxShadow=`0 0 10px ${color}`;
+          }
+        }
+      }
+      checkLines();
+      setTimeout(checkGameOver,100);
+      return true;
+    }
+
+    function checkLines(){
+      let cleared=0;
+      for(let r=0;r<size;r++){
+        if(grid[r].every(cell=>cell.filled)){
+          cleared++;
+          grid[r].forEach(cell=>{
+            cell.filled=false;
+            cell.el.style.background="rgba(255,255,255,0.05)";
+            cell.el.style.boxShadow="none";
+          });
+        }
+      }
+      for(let c=0;c<size;c++){
+        let full=true;
+        for(let r=0;r<size;r++) if(!grid[r][c].filled) full=false;
+        if(full){
+          cleared++;
+          for(let r=0;r<size;r++){
+            grid[r][c].filled=false;
+            grid[r][c].el.style.background="rgba(255,255,255,0.05)";
+            grid[r][c].el.style.boxShadow="none";
+          }
+        }
+      }
+      if(cleared>0){
+        sounds.clear.play();
+        score+=cleared*150;
+        scoreEl.textContent=score;
+        if(score>highScore){
+          highScore=score;
+          localStorage.setItem("block_highscore",highScore);
+          highScoreEl.textContent=highScore;
+        }
+      }
+    }
+
+    function checkGameOver(){
+      if(piecesEl.childElementCount === 0) return;
+      for(const piece of availablePieces){
+        if(!piece) continue;
+        const shape = JSON.parse(piece.dataset.shape);
+        if(canPlace(shape)) return;
+      }
+      sounds.gameover.play();
+      overlay.style.display="flex";
+    }
+
+    function canPlace(shape){
+      for(let y=0;y<=size-shape.length;y++){
+        for(let x=0;x<=size-shape[0].length;x++){
+          let ok=true;
+          for(let r=0;r<shape.length;r++){
+            for(let c=0;c<shape[0].length;c++){
+              if(shape[r][c] && grid[y+r][x+c].filled) ok=false;
+            }
+          }
+          if(ok) return true;
+        }
+      }
+      return false;
+    }
+
+    function showPreview(x,y){
+      if(!selectedPiece) return;
+      clearPreview();
+      let valid=true;
+      const shape=selectedPiece.shape;
+      for(let r=0;r<shape.length;r++){
+        for(let c=0;c<shape[0].length;c++){
+          if(shape[r][c]) {
+            if(y+r>=size||x+c>=size || grid[y+r][x+c].filled) valid=false;
+          }
+        }
+      }
+      for(let r=0;r<shape.length;r++){
+        for(let c=0;c<shape[0].length;c++){
+          if(shape[r][c] && y+r<size && x+c<size){
+            grid[y+r][x+c].el.classList.add(valid?"preview-valid":"preview-invalid");
+          }
+        }
+      }
+    }
+
+    function clearPreview(){
+      document.querySelectorAll(".preview-valid,.preview-invalid").forEach(el=>{
+        el.classList.remove("preview-valid","preview-invalid");
+      });
+    }
+
+    restartBtn.addEventListener("click", initGame);
+    initGame();
+  </script>
+</body>
+</html>
