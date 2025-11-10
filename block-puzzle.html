@@ -1,421 +1,902 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Puzzel Galaxy Cyber</title>
-  <style>
-    body {
-      background: url("https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80") no-repeat center center fixed;
-      background-size: cover;
-      color: #00fff7;
-      font-family: 'Orbitron', sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-    }
-    #title {
-      font-size: 28px;
-      margin-top: 15px;
-      color: #00fff7;
-      text-shadow: 0 0 15px #ff00ff, 0 0 30px #00fff7, 0 0 45px #ff00ff;
-    }
-    h1, h2 {
-      margin: 8px;
-      text-shadow: 0 0 15px #ff00ff, 0 0 30px #00fff7;
-      font-size: 18px;
-    }
-    #game {
-      display: grid;
-      grid-template-columns: repeat(10, 1fr);
-      gap: 2px;
-      margin: 15px auto;
-      max-width: 90vmin;
-      max-height: 90vmin;
-      aspect-ratio: 1 / 1;
-      background: rgba(10, 10, 30, 0.4);
-      padding: 5px;
-      border-radius: 12px;
-      box-shadow: 0 0 20px #00fff7, inset 0 0 10px #ff00ff;
-    }
-    .cell {
-      background: rgba(255,255,255,0.05);
-      border-radius: 5px;
-    }
-    #pieces {
-      margin-top: 10px;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .piece {
-      display: inline-block;
-      padding: 4px;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 8px;
-      background: rgba(10, 10, 30, 0.6);
-      box-shadow: 0 0 8px #00fff7;
-      cursor: pointer;
-    }
-    .block {
-      width: 20px;
-      height: 20px;
-      margin: 1px;
-      display: inline-block;
-      border-radius: 4px;
-      box-shadow: 0 0 6px rgba(0,255,255,0.7);
-    }
-    @media (min-width: 768px) {
-      #title { font-size: 36px; }
-      h1, h2 { font-size: 22px; }
-      .block { width: 30px; height: 30px; }
-    }
-    #overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      z-index: 1000;
-    }
-    #overlay h1 {
-      font-size: 42px;
-      color: #ff007f;
-      text-shadow: 0 0 20px #ff007f, 0 0 40px #ff00ff;
-      margin-bottom: 20px;
-    }
-    #restartBtn {
-      padding: 12px 25px;
-      font-size: 18px;
-      border: none;
-      border-radius: 8px;
-      background: linear-gradient(90deg, #ff007f, #00fff7);
-      color: white;
-      cursor: pointer;
-      box-shadow: 0 0 15px #00fff7, 0 0 30px #ff007f;
-      transition: 0.2s;
-    }
-    #restartBtn:hover { transform: scale(1.1); }
-    footer {
-      margin-top: 20px;
-      color: #fff;
-      font-size: 12px;
-      text-shadow: 0 0 5px #00fff7;
-    }
-    .preview-valid { background: rgba(0,255,255,0.3) !important; }
-    .preview-invalid { background: rgba(255,0,0,0.4) !important; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetNexa - Virtual Pet Luar Angkasa</title>
+    <style>
+        :root {
+            --primary: #0a0e29;
+            --secondary: #1a1f4b;
+            --accent: #6c63ff;
+            --accent-glow: #8a84ff;
+            --text: #ffffff;
+            --health: #ff4d6d;
+            --hunger: #ffbd59;
+            --energy: #5dceff;
+            --mood: #b967ff;
+        }
 
-    /* --------- Tutorial Overlay --------- */
-    #tutorialBtn {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      padding: 8px 12px;
-      font-size: 14px;
-      border: none;
-      border-radius: 6px;
-      background: linear-gradient(90deg,#ff007f,#00fff7);
-      color: white;
-      cursor: pointer;
-      box-shadow: 0 0 10px #00fff7,0 0 20px #ff007f;
-      z-index: 2000;
-    }
-    #tutorialOverlay {
-      position: fixed;
-      top:0; left:0;
-      width:100%; height:100%;
-      background: rgba(0,0,0,0.85);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      z-index: 1500;
-      color:#00fff7;
-      text-align:center;
-      padding:20px;
-    }
-    #tutorialOverlay h1 {
-      font-size: 36px;
-      margin-bottom: 20px;
-    }
-    #tutorialOverlay p {
-      font-size: 16px;
-      line-height: 1.5;
-    }
-    #closeTutorial {
-      padding: 10px 20px;
-      font-size:16px;
-      border:none;
-      border-radius:8px;
-      background: linear-gradient(90deg,#ff007f,#00fff7);
-      color:white;
-      cursor:pointer;
-      margin-top:20px;
-    }
-  </style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--primary);
+            color: var(--text);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Background dengan bintang dan nebula */
+        .space-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+                radial-gradient(2px 2px at 40px 70px, #fff, transparent),
+                radial-gradient(1px 1px at 90px 40px, #ddd, transparent),
+                radial-gradient(1px 1px at 130px 80px, #fff, transparent),
+                radial-gradient(2px 2px at 160px 30px, #eee, transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            animation: twinkle 5s infinite alternate;
+        }
+
+        .nebula {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.3;
+            animation: drift 30s infinite linear;
+        }
+
+        .nebula-1 {
+            background: radial-gradient(circle, #6c63ff, transparent);
+            top: 10%;
+            left: 15%;
+        }
+
+        .nebula-2 {
+            background: radial-gradient(circle, #ff4d6d, transparent);
+            bottom: 20%;
+            right: 10%;
+        }
+
+        .nebula-3 {
+            background: radial-gradient(circle, #5dceff, transparent);
+            top: 40%;
+            right: 25%;
+        }
+
+        /* Container utama game */
+        .game-container {
+            width: 95%;
+            max-width: 800px;
+            height: 90vh;
+            max-height: 700px;
+            background: rgba(26, 31, 75, 0.7);
+            border-radius: 20px;
+            border: 1px solid rgba(108, 99, 255, 0.3);
+            box-shadow: 0 0 30px rgba(108, 99, 255, 0.2);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Header */
+        .game-header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(108, 99, 255, 0.3);
+        }
+
+        .game-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-glow);
+            text-shadow: 0 0 10px var(--accent);
+        }
+
+        .audio-control {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--text);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .audio-control:hover {
+            background: rgba(108, 99, 255, 0.2);
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        /* Area utama game */
+        .game-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Status bar */
+        .status-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .status-bar {
+            flex: 1;
+            min-width: 150px;
+            background: rgba(10, 14, 41, 0.7);
+            border-radius: 15px;
+            padding: 10px 15px;
+            border: 1px solid rgba(108, 99, 255, 0.2);
+            box-shadow: 0 0 10px rgba(108, 99, 255, 0.1);
+        }
+
+        .status-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .status-value {
+            font-weight: bold;
+            color: var(--accent-glow);
+        }
+
+        .status-meter {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .status-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .health-fill {
+            background: var(--health);
+            box-shadow: 0 0 5px var(--health);
+        }
+
+        .hunger-fill {
+            background: var(--hunger);
+            box-shadow: 0 0 5px var(--hunger);
+        }
+
+        .energy-fill {
+            background: var(--energy);
+            box-shadow: 0 0 5px var(--energy);
+        }
+
+        .mood-fill {
+            background: var(--mood);
+            box-shadow: 0 0 5px var(--mood);
+        }
+
+        /* Area pet */
+        .pet-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 10px 0;
+        }
+
+        .map-indicator {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(10, 14, 41, 0.7);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(108, 99, 255, 0.3);
+        }
+
+        .pet-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pet {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #6c63ff, #b967ff);
+            border-radius: 50% 50% 45% 45%;
+            position: relative;
+            animation: float 4s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(108, 99, 255, 0.5);
+        }
+
+        .pet::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 40px 0 0 white;
+        }
+
+        .pet::after {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 35px;
+            width: 10px;
+            height: 10px;
+            background: #0a0e29;
+            border-radius: 50%;
+            box-shadow: 40px 0 0 #0a0e29;
+        }
+
+        .pet-mouth {
+            position: absolute;
+            bottom: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 10px;
+            background: #0a0e29;
+            border-radius: 0 0 10px 10px;
+        }
+
+        /* Area aksi */
+        .action-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 15px;
+            background: rgba(108, 99, 255, 0.2);
+            border: 1px solid var(--accent);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-btn:hover {
+            background: rgba(108, 99, 255, 0.4);
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        .action-btn i {
+            font-size: 1.2rem;
+        }
+
+        /* Inventory */
+        .inventory-container {
+            margin-top: 20px;
+            background: rgba(10, 14, 41, 0.7);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid rgba(108, 99, 255, 0.2);
+        }
+
+        .inventory-title {
+            margin-bottom: 10px;
+            font-size: 1rem;
+            color: var(--accent-glow);
+        }
+
+        .inventory-items {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .inventory-item {
+            width: 60px;
+            height: 60px;
+            background: rgba(26, 31, 75, 0.8);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(108, 99, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .inventory-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+        }
+
+        .item-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--health);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        /* Map selector */
+        .map-selector {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .map-btn {
+            flex: 1;
+            padding: 10px;
+            background: rgba(10, 14, 41, 0.7);
+            border: 1px solid rgba(108, 99, 255, 0.3);
+            border-radius: 10px;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .map-btn.active {
+            background: rgba(108, 99, 255, 0.3);
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .map-btn:hover:not(.active) {
+            background: rgba(108, 99, 255, 0.2);
+        }
+
+        /* Animasi */
+        @keyframes twinkle {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(100px, 50px) rotate(360deg); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        /* Responsif */
+        @media (max-width: 768px) {
+            .game-container {
+                width: 100%;
+                height: 100vh;
+                max-height: none;
+                border-radius: 0;
+            }
+
+            .status-container {
+                flex-direction: column;
+            }
+
+            .action-container {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                min-width: 100%;
+            }
+
+            .map-selector {
+                flex-wrap: wrap;
+            }
+
+            .map-btn {
+                min-width: 45%;
+            }
+        }
+
+        /* Efek partikel */
+        .particle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(26, 31, 75, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid var(--accent);
+            box-shadow: 0 0 15px var(--accent);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
-  <button id="tutorialBtn">📖 Tutorial</button>
+    <div class="space-background">
+        <div class="stars"></div>
+        <div class="nebula nebula-1"></div>
+        <div class="nebula nebula-2"></div>
+        <div class="nebula nebula-3"></div>
+    </div>
 
-  <h1 id="title">🌌 Puzzel Galaxy Cyber 🌌</h1>
-  <h1>💜 Score: <span id="score">0</span></h1>
-  <h2>🏆 High Score: <span id="highscore">0</span></h2>
-  <div id="game"></div>
-  <div id="pieces"></div>
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="game-title">PetNexa</h1>
+            <button class="audio-control" id="audioToggle">
+                <i>🔊</i>
+            </button>
+        </div>
 
-  <div id="overlay">
-    <h1>💀 GAME OVER 💀</h1>
-    <button id="restartBtn">🔄 Mulai Ulang</button>
-  </div>
+        <div class="game-main">
+            <div class="status-container">
+                <div class="status-bar">
+                    <div class="status-label">
+                        <span>Health</span>
+                        <span class="status-value" id="healthValue">100%</span>
+                    </div>
+                    <div class="status-meter">
+                        <div class="status-fill health-fill" id="healthFill" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div class="status-bar">
+                    <div class="status-label">
+                        <span>Hunger</span>
+                        <span class="status-value" id="hungerValue">100%</span>
+                    </div>
+                    <div class="status-meter">
+                        <div class="status-fill hunger-fill" id="hungerFill" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div class="status-bar">
+                    <div class="status-label">
+                        <span>Energy</span>
+                        <span class="status-value" id="energyValue">100%</span>
+                    </div>
+                    <div class="status-meter">
+                        <div class="status-fill energy-fill" id="energyFill" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div class="status-bar">
+                    <div class="status-label">
+                        <span>Mood</span>
+                        <span class="status-value" id="moodValue">100%</span>
+                    </div>
+                    <div class="status-meter">
+                        <div class="status-fill mood-fill" id="moodFill" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
 
-  <div id="tutorialOverlay">
-    <h1>📖 Tutorial</h1>
-    <p>
-      1. Klik salah satu piece di bawah grid untuk memilihnya.<br>
-      2. Klik sel pada grid untuk meletakkan piece.<br>
-      3. Garis penuh akan hilang dan menambah skor.<br>
-      4. Game over terjadi jika tidak ada piece yang bisa diletakkan.
-    </p>
-    <button id="closeTutorial">Tutup</button>
-  </div>
+            <div class="pet-area">
+                <div class="map-indicator" id="mapIndicator">Space Home</div>
+                <div class="pet-container">
+                    <div class="pet">
+                        <div class="pet-mouth"></div>
+                    </div>
+                </div>
+            </div>
 
-  <footer>© 2025 Resturpl2 | Puzzel Galaxy Cyber.</footer>
+            <div class="action-container">
+                <button class="action-btn" id="feedBtn">
+                    <i>🍎</i>
+                    <span>Feed</span>
+                </button>
+                <button class="action-btn" id="playBtn">
+                    <i>🎮</i>
+                    <span>Play</span>
+                </button>
+                <button class="action-btn" id="sleepBtn">
+                    <i>🌙</i>
+                    <span>Sleep</span>
+                </button>
+                <button class="action-btn" id="cleanBtn">
+                    <i>✨</i>
+                    <span>Clean</span>
+                </button>
+            </div>
 
-  <script>
-    const game = document.getElementById("game");
-    const scoreEl = document.getElementById("score");
-    const highScoreEl = document.getElementById("highscore");
-    const piecesEl = document.getElementById("pieces");
-    const overlay = document.getElementById("overlay");
-    const restartBtn = document.getElementById("restartBtn");
+            <div class="inventory-container">
+                <div class="inventory-title">Inventory</div>
+                <div class="inventory-items">
+                    <div class="inventory-item" data-item="star-fruit">
+                        <i>⭐</i>
+                        <div class="item-count" id="starFruitCount">3</div>
+                    </div>
+                    <div class="inventory-item" data-item="nebula-crystal">
+                        <i>💎</i>
+                        <div class="item-count" id="nebulaCrystalCount">1</div>
+                    </div>
+                    <div class="inventory-item" data-item="cosmic-berry">
+                        <i>🍓</i>
+                        <div class="item-count" id="cosmicBerryCount">0</div>
+                    </div>
+                </div>
+            </div>
 
-    // Tutorial
-    const tutorialBtn = document.getElementById("tutorialBtn");
-    const tutorialOverlay = document.getElementById("tutorialOverlay");
-    const closeTutorial = document.getElementById("closeTutorial");
+            <div class="map-selector">
+                <button class="map-btn active" data-map="home">Space Home</button>
+                <button class="map-btn" data-map="garden">Star Garden</button>
+                <button class="map-btn" data-map="park">Nebula Park</button>
+                <button class="map-btn" data-map="field">Asteroid Field</button>
+            </div>
+        </div>
+    </div>
 
-    tutorialBtn.addEventListener("click", () => {
-      tutorialOverlay.style.display = "flex";
-    });
-    closeTutorial.addEventListener("click", () => {
-      tutorialOverlay.style.display = "none";
-    });
+    <div class="toast" id="toast"></div>
 
-    let score = 0;
-    let highScore = localStorage.getItem("block_highscore") || 0;
-    highScoreEl.textContent = highScore;
+    <script>
+        // Data game
+        let gameState = {
+            health: 100,
+            hunger: 100,
+            energy: 100,
+            mood: 100,
+            lastUpdate: Date.now(),
+            currentMap: 'home',
+            inventory: {
+                'star-fruit': 3,
+                'nebula-crystal': 1,
+                'cosmic-berry': 0
+            },
+            audioEnabled: false
+        };
 
-    const colors = ["#ff007f","#00fff7","#ffea00","#00ff73","#ff6a00","#8b00ff"];
-    const size = 10;
-    let grid = [];
-    let availablePieces = [];
-    let selectedPiece = null;
+        // Elemen DOM
+        const healthValue = document.getElementById('healthValue');
+        const hungerValue = document.getElementById('hungerValue');
+        const energyValue = document.getElementById('energyValue');
+        const moodValue = document.getElementById('moodValue');
+        const healthFill = document.getElementById('healthFill');
+        const hungerFill = document.getElementById('hungerFill');
+        const energyFill = document.getElementById('energyFill');
+        const moodFill = document.getElementById('moodFill');
+        const mapIndicator = document.getElementById('mapIndicator');
+        const feedBtn = document.getElementById('feedBtn');
+        const playBtn = document.getElementById('playBtn');
+        const sleepBtn = document.getElementById('sleepBtn');
+        const cleanBtn = document.getElementById('cleanBtn');
+        const audioToggle = document.getElementById('audioToggle');
+        const toast = document.getElementById('toast');
+        const mapButtons = document.querySelectorAll('.map-btn');
+        const inventoryItems = document.querySelectorAll('.inventory-item');
 
-    const sounds = {
-      place: new Audio("https://freesound.org/data/previews/256/256113_3263906-lq.mp3"),
-      clear: new Audio("https://freesound.org/data/previews/331/331912_3248244-lq.mp3"),
-      gameover: new Audio("https://freesound.org/data/previews/331/331912_3248244-lq.mp3")
-    };
-
-    function initGame(){
-      game.innerHTML="";
-      piecesEl.innerHTML="";
-      grid=[];
-      availablePieces=[];
-      selectedPiece=null;
-      score=0;
-      scoreEl.textContent=score;
-      overlay.style.display="none";
-
-      for (let r=0; r<size; r++) {
-        grid[r] = [];
-        for (let c=0; c<size; c++) {
-          const cell = document.createElement("div");
-          cell.className = "cell";
-          game.appendChild(cell);
-          grid[r][c] = {filled:false, el:cell};
-          cell.addEventListener("click",()=>placeAt(c,r));
-          cell.addEventListener("mouseenter",()=>showPreview(c,r));
-          cell.addEventListener("mouseleave",clearPreview);
-        }
-      }
-      newPieces();
-    }
-
-    const shapes = [
-      [[1,1,1,1]],
-      [[1],[1],[1],[1]],
-      [[1,1],[1,1]],
-      [[1,1,1],[0,1,0]],
-      [[1,1,0],[0,1,1]],
-      [[0,1,1],[1,1,0]],
-      [[1,0],[1,0],[1,1]]
-    ];
-
-    function newPieces(){
-      if (piecesEl.childElementCount > 0) return;
-      availablePieces = [];
-      for(let i=0;i<3;i++){
-        const shape = shapes[Math.floor(Math.random()*shapes.length)];
-        const piece = document.createElement("div");
-        piece.className="piece";
-        const color = colors[Math.floor(Math.random()*colors.length)];
-        piece.dataset.shape = JSON.stringify(shape);
-        piece.dataset.color = color;
-        piece.dataset.id = i;
-        shape.forEach(row=>{
-          const rowEl = document.createElement("div");
-          row.forEach(v=>{
-            const b = document.createElement("div");
-            b.className="block";
-            if(v) b.style.background=color;
-            rowEl.appendChild(b);
-          });
-          piece.appendChild(rowEl);
-        });
-        piece.addEventListener("click",()=>{
-          selectedPiece = {shape: JSON.parse(piece.dataset.shape), color: piece.dataset.color, id: i, el: piece};
-          document.querySelectorAll(".piece").forEach(p=>p.style.outline="");
-          piece.style.outline = "2px solid #fff";
-        });
-        piecesEl.appendChild(piece);
-        availablePieces.push(piece);
-      }
-      checkGameOver();
-    }
-
-    function placeAt(x,y){
-      if(!selectedPiece) return;
-      if(placeShape(selectedPiece.shape,x,y,selectedPiece.color)){
-        sounds.place.play();
-        selectedPiece.el.remove();
-        availablePieces[selectedPiece.id] = null;
-        selectedPiece = null;
-        clearPreview();
-        if(availablePieces.every(p => p === null)){
-          piecesEl.innerHTML = "";
-          newPieces();
-        }
-      }
-    }
-
-    function placeShape(shape,x,y,color){
-      for(let r=0;r<shape.length;r++){
-        for(let c=0;c<shape[0].length;c++){
-          if(shape[r][c]){
-            if(y+r>=size||x+c>=size) return false;
-            if(grid[y+r][x+c].filled) return false;
-          }
-        }
-      }
-      for(let r=0;r<shape.length;r++){
-        for(let c=0;c<shape[0].length;c++){
-          if(shape[r][c]){
-            grid[y+r][x+c].filled=true;
-            grid[y+r][x+c].el.style.background=color;
-            grid[y+r][x+c].el.style.boxShadow=`0 0 10px ${color}`;
-          }
-        }
-      }
-      checkLines();
-      setTimeout(checkGameOver,100);
-      return true;
-    }
-
-    function checkLines(){
-      let cleared=0;
-      for(let r=0;r<size;r++){
-        if(grid[r].every(cell=>cell.filled)){
-          cleared++;
-          grid[r].forEach(cell=>{
-            cell.filled=false;
-            cell.el.style.background="rgba(255,255,255,0.05)";
-            cell.el.style.boxShadow="none";
-          });
-        }
-      }
-      for(let c=0;c<size;c++){
-        let full=true;
-        for(let r=0;r<size;r++) if(!grid[r][c].filled) full=false;
-        if(full){
-          cleared++;
-          for(let r=0;r<size;r++){
-            grid[r][c].filled=false;
-            grid[r][c].el.style.background="rgba(255,255,255,0.05)";
-            grid[r][c].el.style.boxShadow="none";
-          }
-        }
-      }
-      if(cleared>0){
-        sounds.clear.play();
-        score+=cleared*150;
-        scoreEl.textContent=score;
-        if(score>highScore){
-          highScore=score;
-          localStorage.setItem("block_highscore",highScore);
-          highScoreEl.textContent=highScore;
-        }
-      }
-    }
-
-    function checkGameOver(){
-      if(piecesEl.childElementCount === 0) return;
-      for(const piece of availablePieces){
-        if(!piece) continue;
-        const shape = JSON.parse(piece.dataset.shape);
-        if(canPlace(shape)) return;
-      }
-      sounds.gameover.play();
-      overlay.style.display="flex";
-    }
-
-    function canPlace(shape){
-      for(let y=0;y<=size-shape.length;y++){
-        for(let x=0;x<=size-shape[0].length;x++){
-          let ok=true;
-          for(let r=0;r<shape.length;r++){
-            for(let c=0;c<shape[0].length;c++){
-              if(shape[r][c] && grid[y+r][x+c].filled) ok=false;
+        // Load data dari localStorage
+        function loadGameState() {
+            const savedState = localStorage.getItem('petnexa-game-state');
+            if (savedState) {
+                const parsedState = JSON.parse(savedState);
+                
+                // Hitung waktu yang telah berlalu sejak terakhir kali bermain
+                const timeElapsed = Date.now() - parsedState.lastUpdate;
+                const hoursElapsed = timeElapsed / (1000 * 60 * 60);
+                
+                // Update status berdasarkan waktu yang berlalu
+                if (hoursElapsed > 0.1) { // Jika lebih dari 6 menit
+                    parsedState.hunger = Math.max(0, parsedState.hunger - (hoursElapsed * 10));
+                    parsedState.energy = Math.max(0, parsedState.energy - (hoursElapsed * 8));
+                    parsedState.mood = Math.max(0, parsedState.mood - (hoursElapsed * 5));
+                    
+                    // Health berkurang jika hunger atau energy terlalu rendah
+                    if (parsedState.hunger < 20 || parsedState.energy < 20) {
+                        parsedState.health = Math.max(0, parsedState.health - (hoursElapsed * 5));
+                    }
+                }
+                
+                gameState = {...gameState, ...parsedState, lastUpdate: Date.now()};
             }
-          }
-          if(ok) return true;
+            
+            updateUI();
         }
-      }
-      return false;
-    }
 
-    function showPreview(x,y){
-      if(!selectedPiece) return;
-      clearPreview();
-      let valid=true;
-      const shape=selectedPiece.shape;
-      for(let r=0;r<shape.length;r++){
-        for(let c=0;c<shape[0].length;c++){
-          if(shape[r][c]) {
-            if(y+r>=size||x+c>=size || grid[y+r][x+c].filled) valid=false;
-          }
+        // Simpan data ke localStorage
+        function saveGameState() {
+            gameState.lastUpdate = Date.now();
+            localStorage.setItem('petnexa-game-state', JSON.stringify(gameState));
         }
-      }
-      for(let r=0;r<shape.length;r++){
-        for(let c=0;c<shape[0].length;c++){
-          if(shape[r][c] && y+r<size && x+c<size){
-            grid[y+r][x+c].el.classList.add(valid?"preview-valid":"preview-invalid");
-          }
+
+        // Update UI berdasarkan state
+        function updateUI() {
+            // Update nilai status
+            healthValue.textContent = `${Math.round(gameState.health)}%`;
+            hungerValue.textContent = `${Math.round(gameState.hunger)}%`;
+            energyValue.textContent = `${Math.round(gameState.energy)}%`;
+            moodValue.textContent = `${Math.round(gameState.mood)}%`;
+            
+            // Update progress bar
+            healthFill.style.width = `${gameState.health}%`;
+            hungerFill.style.width = `${gameState.hunger}%`;
+            energyFill.style.width = `${gameState.energy}%`;
+            moodFill.style.width = `${gameState.mood}%`;
+            
+            // Update inventory counts
+            document.getElementById('starFruitCount').textContent = gameState.inventory['star-fruit'];
+            document.getElementById('nebulaCrystalCount').textContent = gameState.inventory['nebula-crystal'];
+            document.getElementById('cosmicBerryCount').textContent = gameState.inventory['cosmic-berry'];
+            
+            // Update map indicator
+            const mapNames = {
+                'home': 'Space Home',
+                'garden': 'Star Garden',
+                'park': 'Nebula Park',
+                'field': 'Asteroid Field'
+            };
+            mapIndicator.textContent = mapNames[gameState.currentMap];
+            
+            // Update map buttons
+            mapButtons.forEach(btn => {
+                if (btn.dataset.map === gameState.currentMap) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // Update audio button
+            audioToggle.innerHTML = gameState.audioEnabled ? '<i>🔊</i>' : '<i>🔇</i>';
         }
-      }
-    }
 
-    function clearPreview(){
-      document.querySelectorAll(".preview-valid,.preview-invalid").forEach(el=>{
-        el.classList.remove("preview-valid","preview-invalid");
-      });
-    }
+        // Tampilkan toast notification
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
 
-    restartBtn.addEventListener("click", initGame);
-    initGame();
-  </script>
+        // Animasi partikel
+        function createParticles(x, y, count, color) {
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.background = color;
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                document.body.appendChild(particle);
+                
+                // Animasi partikel
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 2 + Math.random() * 3;
+                const size = 2 + Math.random() * 4;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                const vx = Math.cos(angle) * speed;
+                const vy = Math.sin(angle) * speed;
+                
+                let opacity = 1;
+                const fadeInterval = setInterval(() => {
+                    opacity -= 0.05;
+                    particle.style.opacity = opacity;
+                    particle.style.transform = `translate(${vx * (1 - opacity) * 20}px, ${vy * (1 - opacity) * 20}px)`;
+                    
+                    if (opacity <= 0) {
+                        clearInterval(fadeInterval);
+                        document.body.removeChild(particle);
+                    }
+                }, 50);
+            }
+        }
+
+        // Event listeners
+        feedBtn.addEventListener('click', () => {
+            if (gameState.hunger < 100) {
+                gameState.hunger = Math.min(100, gameState.hunger + 15);
+                gameState.energy = Math.min(100, gameState.energy + 5);
+                showToast('Nexa is eating... Hunger +15, Energy +5');
+                createParticles(400, 300, 10, '#ffbd59');
+                saveGameState();
+                updateUI();
+            } else {
+                showToast('Nexa is not hungry right now!');
+            }
+        });
+
+        playBtn.addEventListener('click', () => {
+            if (gameState.energy > 10) {
+                gameState.mood = Math.min(100, gameState.mood + 20);
+                gameState.energy = Math.max(0, gameState.energy - 10);
+                showToast('Playing with Nexa! Mood +20, Energy -10');
+                createParticles(400, 300, 15, '#b967ff');
+                saveGameState();
+                updateUI();
+            } else {
+                showToast('Nexa is too tired to play!');
+            }
+        });
+
+        sleepBtn.addEventListener('click', () => {
+            if (gameState.energy < 100) {
+                gameState.energy = Math.min(100, gameState.energy + 30);
+                showToast('Nexa is sleeping... Energy +30');
+                createParticles(400, 300, 8, '#5dceff');
+                saveGameState();
+                updateUI();
+            } else {
+                showToast('Nexa is not tired!');
+            }
+        });
+
+        cleanBtn.addEventListener('click', () => {
+            if (gameState.health < 100) {
+                gameState.health = Math.min(100, gameState.health + 10);
+                gameState.mood = Math.min(100, gameState.mood + 5);
+                showToast('Cleaning Nexa! Health +10, Mood +5');
+                createParticles(400, 300, 12, '#6c63ff');
+                saveGameState();
+                updateUI();
+            } else {
+                showToast('Nexa is already clean!');
+            }
+        });
+
+        audioToggle.addEventListener('click', () => {
+            gameState.audioEnabled = !gameState.audioEnabled;
+            showToast(gameState.audioEnabled ? 'Audio enabled' : 'Audio disabled');
+            saveGameState();
+            updateUI();
+        });
+
+        mapButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                gameState.currentMap = btn.dataset.map;
+                showToast(`Traveling to ${btn.textContent}...`);
+                saveGameState();
+                updateUI();
+            });
+        });
+
+        inventoryItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const itemType = item.dataset.item;
+                
+                if (gameState.inventory[itemType] > 0) {
+                    gameState.inventory[itemType]--;
+                    
+                    switch(itemType) {
+                        case 'star-fruit':
+                            gameState.hunger = Math.min(100, gameState.hunger + 25);
+                            gameState.energy = Math.min(100, gameState.energy + 10);
+                            showToast('Used Star Fruit! Hunger +25, Energy +10');
+                            createParticles(400, 300, 15, '#ffbd59');
+                            break;
+                        case 'nebula-crystal':
+                            gameState.health = Math.min(100, gameState.health + 30);
+                            showToast('Used Nebula Crystal! Health +30');
+                            createParticles(400, 300, 20, '#ff4d6d');
+                            break;
+                        case 'cosmic-berry':
+                            gameState.mood = Math.min(100, gameState.mood + 40);
+                            gameState.energy = Math.min(100, gameState.energy + 20);
+                            showToast('Used Cosmic Berry! Mood +40, Energy +20');
+                            createParticles(400, 300, 25, '#b967ff');
+                            break;
+                    }
+                    
+                    saveGameState();
+                    updateUI();
+                } else {
+                    showToast(`No ${itemType.replace('-', ' ')} left!`);
+                }
+            });
+        });
+
+        // Inisialisasi game
+        loadGameState();
+
+        // Simpan state secara berkala
+        setInterval(saveGameState, 30000); // Setiap 30 detik
+
+        // Degradasi status secara berkala
+        setInterval(() => {
+            // Hunger berkurang perlahan
+            gameState.hunger = Math.max(0, gameState.hunger - 0.5);
+            
+            // Energy berkurang jika tidak tidur
+            if (gameState.energy > 0) {
+                gameState.energy = Math.max(0, gameState.energy - 0.3);
+            }
+            
+            // Mood berkurang perlahan
+            gameState.mood = Math.max(0, gameState.mood - 0.2);
+            
+            // Health berkurang jika hunger atau energy terlalu rendah
+            if (gameState.hunger < 20 || gameState.energy < 20) {
+                gameState.health = Math.max(0, gameState.health - 0.5);
+            }
+            
+            // Health meningkat jika semua status baik
+            if (gameState.hunger > 80 && gameState.energy > 80 && gameState.mood > 80) {
+                gameState.health = Math.min(100, gameState.health + 0.2);
+            }
+            
+            updateUI();
+        }, 10000); // Setiap 10 detik
+    </script>
 </body>
 </html>
